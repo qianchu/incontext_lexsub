@@ -9,7 +9,7 @@ git config --global user.name "qianchu"
 
 # set up bash shell
 # pack python project
-cd /home/incontext_lexsub
+#cd /stage/incontext_lexsub
 #sudo python setup.py install
 #sudo pip install -U scipy
 #sudo pip install -U scikit-learn
@@ -19,7 +19,8 @@ cd /home/incontext_lexsub
 # run jupyter
 cd /home/
 sudo chmod -R 777 ./*
-cd /home/incontext_lexsub
+sudo mv /stage/allennlp/allennlp /usr/local/lib/python3.6/site-packages/
+
 # sudo python -m pip install --upgrade pip
 # sudo python -m pip install jupyter
 # sudo python -m pip install pandas
