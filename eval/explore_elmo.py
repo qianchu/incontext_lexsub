@@ -58,7 +58,7 @@ def context_independent_batch(words,batchsize):
         words_matrix.append(x_ls)
         
     words_matrix_all=np.concatenate(words_matrix,axis=0)
-    words_matrix=words_matrix.reshape(words_matrix.shape[0],words_matrix.shape[2])
+#     words_matrix=words_matrix.reshape(words_matrix.shape[0],words_matrix.shape[2])
     return words_matrix_all
     
     
@@ -118,11 +118,11 @@ len(words_matrix)
 # In[ ]:
 
 
-#similarity
+#similarity simlex
 predicts=[]
 golds=[]
 line_num=0
-with open ('word_similarity') as f:
+with open ('simlex') as f:
     for line in f:
         if line_num==0:
             line_num+=1
@@ -130,7 +130,7 @@ with open ('word_similarity') as f:
         
         line=line.split('\t')
         try:
-            predict = cosine_similarity([words_matrix[word2index[line[0]]]],[words_matrix[word2index[line[1]]]])
+            predict = cosine_similarity(words_matrix[word2index[line[0]]],words_matrix[word2index[line[1]]])
         except KeyError as e:
             predict = cosine_similarity([context_dependent([line[0]])],[context_dependent([line[1]])])
         
@@ -142,7 +142,40 @@ with open ('word_similarity') as f:
 
         line_num+=1   
           
-spearmanr(predicts,golds)
+print ('simlex sim is {0}'.format(spearmanr(predicts,golds)))
+
+
+# In[ ]:
+
+
+#MEN
+predicts=[]
+golds=[]
+line_num=0
+with open ('MEN_dataset_lemma_form_full','r') as f:
+    for line in f:
+        
+    #         if line_num==0:
+#             line_num+=1
+#             continue
+        line=line.split()
+        
+        try:
+            
+            predict = cosine_similarity(words_matrix[word2index[line[0].split('-')[0]]],words_matrix[word2index[line[1].split('-')[0]]])
+        except KeyError as e:
+#             print (line[0].split('-')[0])
+            predict = cosine_similarity([context_dependent([line[0].split('-')[0]])],[context_dependent([line[1].split('-')[0]])])
+        
+        print (line[2],predict[0][0])
+
+        predicts.append(predict[0][0])
+
+        golds.append(float(line[2]))
+
+        line_num+=1   
+          
+print ('MEN sim is {0}'.format(spearmanr(predicts,golds)))
 
 
 # In[ ]:
@@ -150,6 +183,6 @@ spearmanr(predicts,golds)
 
 # nearest neighbour
 #words_matrix2=deepcopy(words_matrix)
-nearest_neighbour(['old'],words_matrix,index2word,30,index=0)
+# nearest_neighbour(['old'],words_matrix,index2word,30,index=0)
 # cosine_similarity([words_matrix[0][1]],words_matrix[0])
 
