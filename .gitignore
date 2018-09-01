@@ -1,2 +1,6 @@
+corpora/corpora/
+models/
+.Trash-1000/
+*.log
 eval/lexsub/
 *.ipynb_checkpoints/
