@@ -73,7 +73,12 @@ class CsInferrer(object):
         if result_vec != None:
             for word, weight in result_vec:
                 wn_pos = to_wordnet_pos[pos]
-                lemma = WordNetLemmatizer().lemmatize(word, wn_pos)
+                word=word.decode('utf-8')
+                try:
+                    lemma = WordNetLemmatizer().lemmatize(word, wn_pos)
+                except UnicodeDecodeError as e:
+                    print (word,e)
+                    continue
                 if lemma in candidates:
                     self.add_inference_result(lemma, weight, filtered_results, candidates_found)
                 if lemma.title() in candidates:

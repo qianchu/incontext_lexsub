@@ -7,6 +7,9 @@ import argparse
 import re
 import numpy
 
+import nltk
+nltk.download('wordnet')
+
 from jcs.jcs_io import extract_word_weight
 
 from jcs.data.context_instance import ContextInstance
@@ -16,6 +19,8 @@ from jcs.jcs_io import vec_to_str
 from jcs.jcs_io import vec_to_str_generated
 from jcs.cs_embedding_inferrer import CsEmbeddingInferrer
 from jcs.context2vec_inferrer import Context2vecInferrer
+
+
 
 target_re = re.compile(".*__(.*)__.*")
 
@@ -66,7 +71,7 @@ def run_test(inferrer):
         tfo.write("GENERATED\t" + ' '.join([lst_instance.full_target_key, lst_instance.target_id]) + " ::: " + vec_to_str_generated(generated_results.iteritems(), args.topgenerated)+"\n")
         tfo_generated_oot.write(' '.join([lst_instance.full_target_key, lst_instance.target_id]) + " ::: " + vec_to_str_generated(generated_results.iteritems(), args.topgenerated)+"\n")
         tfo_generated_best.write(' '.join([lst_instance.full_target_key, lst_instance.target_id]) + " :: " + vec_to_str_generated(generated_results.iteritems(), 1)+"\n")
-        
+        print (inferrer)
         filtered_results = inferrer.filter_inferred(result_vec, target2candidates[lst_instance.target_key], lst_instance.pos)
         
         tfo.write("\nFiltered results\n")
@@ -110,7 +115,7 @@ def run(args):
 
     
 if __name__ == '__main__':
-  
+
     parser = argparse.ArgumentParser(description='JCS utility')
     
     
