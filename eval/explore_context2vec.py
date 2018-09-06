@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[5]:
+# In[1]:
 
 
 import numpy
@@ -18,10 +18,10 @@ import numpy as np
 from scipy.stats import spearmanr
 
 
-# In[11]:
+# In[8]:
 
 
-model_param_file = '../models/context2vec/model_dir/MODEL-wiki.params.10'
+model_param_file = '../models/context2vec/model_dir/MODEL-1B-300dim.params.10'
 n_result = 10  # number of search result to show
 gpu = -1 # todo: make this work with gpu
 
@@ -38,7 +38,7 @@ index2word = model_reader.index2word
 model = model_reader.model
 
 
-# In[12]:
+# In[9]:
 
 
 #similarity simlex
@@ -69,7 +69,7 @@ with open ('simlex') as f:
 print ('simlex sim is {0}'.format(spearmanr(predicts,golds)))
 
 
-# In[13]:
+# In[10]:
 
 
 #MEN
