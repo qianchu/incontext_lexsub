@@ -1,3 +1,4 @@
+*.pyc
 corpora/corpora/
 models/
 .Trash-1000/
