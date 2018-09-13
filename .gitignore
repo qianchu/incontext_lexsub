@@ -1,3 +1,12 @@
+eval/lexsub_en/lst_test_context2vec-300dim-10-targetw-test
+eval/lexsub_en/lst_test_context2vec-300dim-10-test
+eval/lexsub_en/lst_all_context2vec-300dim-10-targetw
+*.score
+*.CONFIG
+*.oot
+*.best
+*.ranked
+eval/lexsub_en/*.npy
 *.pyc
 corpora/corpora/
 models/
