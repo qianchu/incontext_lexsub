@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[49]:
 
 
 from allennlp.modules.elmo import Elmo, batch_to_ids
@@ -19,7 +19,7 @@ weight_file = "https://s3-us-west-2.amazonaws.com/allennlp/models/elmo/2x4096_51
 elmo = Elmo(options_file, weight_file, 1, dropout=0)
 
 
-# In[3]:
+# In[71]:
 
 
 # def context_independent_sim(x,y):
@@ -71,9 +71,15 @@ def context_dependent(x,index=0):
     return x1
 
 def nearest_neighbour(x,vocab,index2word,n_result,index=0):
-   
+    vocab = normalize(vocab)
     x1=context_dependent(x,index)
-    similarity=cosine_similarity([x1],vocab)[0]
+    x1=normalize([x1])[0]
+#     x1 = x1 / np.sqrt((x1 * x1).sum())
+
+#     x1=x1[0]
+#     print(np.linalg.norm(x1))
+#     similarity=cosine_similarity2([x1],vocab)[0]
+    similarity=vocab.dot(x1)
     count=0
     for i in (-similarity).argsort():
                     if np.isnan(similarity[i]):
@@ -88,7 +94,7 @@ def nearest_neighbour(x,vocab,index2word,n_result,index=0):
     return 
 
 
-# In[ ]:
+# In[17]:
 
 
 #vocab
@@ -98,12 +104,12 @@ index2word={}
 vocab_matrix=[]
 words=[]
 index=0
-with open('test_vocab_bnc') as f:
+with open('../corpora/1-billion-vocab') as f:
     for line in f:
-        word=line.split()[2]
+        word=line.split()[0]
 #         vocab_matrix.append(context_independent(word))
-        index2word[index]=word
-        word2index[word]=index
+        index2word[int(index)]=word
+        word2index[word]=int(index)
         words.append(word)
         index+=1
         
@@ -111,8 +117,27 @@ with open('test_vocab_bnc') as f:
 
 
 
-words_matrix=context_independent_batch(words,1000)
+words_matrix=context_independent_batch(words[:10000],1000)
 len(words_matrix)
+
+
+# In[9]:
+
+
+vocab2elmo=np.load('./lexsub_en/vocab2elmo.npy')
+vocab2index=np.load('./lexsub_en/vocab2index.npy')
+
+
+# In[18]:
+
+
+index2vocab={}
+vocab2index_new={}
+for vocab_index in vocab2index:
+    vocab2index_new[vocab_index[0]]=int(vocab_index[1])
+    index2vocab[int(vocab_index[1])]=vocab_index[0]
+index2vocab
+len(vocab2index)
 
 
 # In[ ]:
@@ -143,6 +168,12 @@ with open ('simlex') as f:
         line_num+=1   
           
 print ('simlex sim is {0}'.format(spearmanr(predicts,golds)))
+
+
+# In[29]:
+
+
+get_ipython().run_line_magic('pinfo2', 'cosine_similarity')
 
 
 # In[ ]:
@@ -178,11 +209,69 @@ with open ('MEN_dataset_lemma_form_full','r') as f:
 print ('MEN sim is {0}'.format(spearmanr(predicts,golds)))
 
 
-# In[ ]:
+# In[65]:
+
+
+from sklearn.preprocessing import normalize
+from sklearn.utils.extmath import safe_sparse_dot
+def cosine_similarity2(X, Y=None, dense_output=True):
+    """Compute cosine similarity between samples in X and Y.
+
+    Cosine similarity, or the cosine kernel, computes similarity as the
+    normalized dot product of X and Y:
+
+        K(X, Y) = <X, Y> / (||X||*||Y||)
+
+    On L2-normalized data, this function is equivalent to linear_kernel.
+
+    Read more in the :ref:`User Guide <cosine_similarity>`.
+
+    Parameters
+    ----------
+    X : ndarray or sparse array, shape: (n_samples_X, n_features)
+        Input data.
+
+    Y : ndarray or sparse array, shape: (n_samples_Y, n_features)
+        Input data. If ``None``, the output will be the pairwise
+        similarities between all samples in ``X``.
+
+    dense_output : boolean (optional), default True
+        Whether to return dense output even when the input is sparse. If
+        ``False``, the output is sparse if both input arrays are sparse.
+
+        .. versionadded:: 0.17
+           parameter ``dense_output`` for dense output.
+
+    Returns
+    -------
+    kernel matrix : array
+        An array with shape (n_samples_X, n_samples_Y).
+    """
+    # to avoid recursive import
+
+#     X, Y = check_pairwise_arrays(X, Y)
+    X=np.array(X)
+    Y=np.array(Y)
+    X_normalized = X / np.sqrt((X * X).sum())
+    if X is Y:
+        Y_normalized = X_normalized
+    else:
+        Y_normalized = Y / np.sqrt((Y * Y).sum())
+    
+    print (np.linalg.norm(X_normalized),np.linalg.norm(Y_normalized[0]))
+    K = safe_sparse_dot(X_normalized, Y_normalized.T, dense_output=dense_output)
+
+    return K
+
+
+# In[72]:
 
 
 # nearest neighbour
-#words_matrix2=deepcopy(words_matrix)
-# nearest_neighbour(['old'],words_matrix,index2word,30,index=0)
+sent='during the siege , george robertson had appointed shuja-ul-mulk , who was a bright boy only 12 years old and the youngest surviving son of aman-ul-mulk , as the ruler of chitral .'
+words_lst=[w for w in sent.split()]
+index=words_lst.index('bright')
+print (words_lst,index)
+nearest_neighbour(words_lst,vocab2elmo,index2vocab,30,index)
 # cosine_similarity([words_matrix[0][1]],words_matrix[0])
 
